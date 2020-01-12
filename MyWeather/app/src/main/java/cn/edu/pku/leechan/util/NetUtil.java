@@ -4,6 +4,16 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+import cn.edu.pku.leechan.bean.TodayWeather;
+
 public class NetUtil {
     public static final int NETWORN_NONE = 0;
     public static final int NETWORN_WIFI = 1;
@@ -22,5 +32,35 @@ public class NetUtil {
             return NETWORN_WIFI;
         }
         return NETWORN_NONE;
+    }
+
+    public static String getFromNet(String url) {
+        String responseStr = "";
+        HttpURLConnection con = null;
+        TodayWeather todayWeather = null;
+        try {
+            URL murl = new URL(url);
+            con = (HttpURLConnection) murl.openConnection();
+            con.setRequestMethod("GET");
+            con.setConnectTimeout(5000);
+            con.setReadTimeout(5000);
+            InputStream in = con.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            StringBuilder response = new StringBuilder();
+            String str;
+            while ((str = reader.readLine()) != null) {
+                response.append(str);
+            }
+            responseStr = response.toString();
+            Log.d("myWeather", "respon: "+responseStr);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (con != null) {
+                con.disconnect();
+            }
+        }
+        return responseStr;
     }
 }

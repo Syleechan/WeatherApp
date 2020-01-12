@@ -1,17 +1,17 @@
 package cn.edu.pku.leechan.db;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.content.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.edu.pku.leechan.bean.City;
 
 public class CityDB {
     public static final String CITY_DB_NAME = "city.db";
-    private static final String CITY_TABLE_NAME = "city";
+    private static final String CITY_TABLE_NAME = "main.city";
     private SQLiteDatabase db;
     public CityDB(Context context, String path) {
         db = context.openOrCreateDatabase(path, Context.MODE_PRIVATE, null);
@@ -30,5 +30,47 @@ public class CityDB {
             list.add(item);
         }
         return list;
+    }
+
+    /**
+     * 根据城市名，获取城市码
+     * @param city
+     * @return
+     */
+    public String getCityCodeByCity(String city) {
+        String code = "";
+        Cursor c = db.query(CITY_TABLE_NAME,new String[]{"number"},"city like ?",new String[]{city},null,null,null);
+        while (c.moveToNext()) {
+            code = c.getString(c.getColumnIndex("number"));
+        }
+        return code;
+
+    }
+    /**
+     * 根据城市名，获取省份
+     * @param city
+     * @return
+     */
+    public String getProvinceByCity(String city) {
+        String province = "";
+//        Cursor c = db.query(CITY_TABLE_NAME,new String[]{"province"},"city like ?",new String[]{city},null,null,null);
+        Cursor c = db.query(CITY_TABLE_NAME,null,"city like ?",new String[]{city},null,null,null);
+        while (c.moveToNext()) {
+            province = c.getString(c.getColumnIndex("province"));
+        }
+        return province;
+    }
+    /**
+     * 根据省，获取省会城市
+     * @param province
+     * @return
+     */
+    public String getMainCityByProvince(String province) {
+        String city = "";
+        Cursor c = db.query(CITY_TABLE_NAME,new String[]{"city"},"province like ?",new String[]{province},null,null,null,"1");
+        while (c.moveToNext()) {
+            city = c.getString(c.getColumnIndex("city"));
+        }
+        return city;
     }
 }

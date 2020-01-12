@@ -1,6 +1,8 @@
 package cn.edu.pku.leechan.bean;
 
-public class TodayWeather {
+import java.io.Serializable;
+
+public class TodayWeather implements Serializable {
     private String city;
     private String updatetime;
     private String wendu;
